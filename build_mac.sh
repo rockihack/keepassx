@@ -10,6 +10,5 @@ if cd build; then
     export CMAKE_PREFIX_PATH=$QT5_DIR
     cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release
     make -j4
-
-    $QT5_DIR/bin/macdeployqt src/KeePassX.app
 fi
+
