@@ -202,7 +202,6 @@ if(APPLE)
   set(CPACK_PACKAGE_FILE_NAME "${PROGNAME}-${KEEPASSX_VERSION_NUM}")
   include(CPack)
 
-  set(QT_BINARY_DIR "/usr/local/opt/qt5/bin")
   add_custom_command(TARGET ${PROGNAME}
                      POST_BUILD
                      COMMAND ${QT_BINARY_DIR}/macdeployqt ${PROGNAME}.app
