@@ -144,7 +144,7 @@ int UInput::createDevice()
 //
 // Destroy virtual device
 //
-void UInput::destroyDevice(int fd)
+void UInput::destroyDevice(const int fd)
 {
     ioctl(fd, UI_DEV_DESTROY);
     close(fd);

@@ -29,8 +29,8 @@ AutoTypePlatformWayland::AutoTypePlatformWayland()
 
 bool AutoTypePlatformWayland::isAvailable()
 {
-    const xkb_rule_names xkbRuleNames = { "evdev", "pc105", "us", "", "" };
-    return m_virtualKeyboard->init(&xkbRuleNames);
+    //const xkb_rule_names xkbRuleNames = { "evdev", "pc105", "us", "", "" };
+    return m_virtualKeyboard->init(nullptr);
 }
 
 //

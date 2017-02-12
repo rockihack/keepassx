@@ -43,8 +43,6 @@ public:
     bool lookupChar(const uint32_t utf32, KeyboardState& state) const;
 
 private:
-    typedef std::unordered_map<uint32_t, KeyboardState> UnicodeMap;
-
     bool m_initialized;
     std::unordered_map<uint32_t, KeyboardState> m_unicodeMap;
 

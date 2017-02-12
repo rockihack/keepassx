@@ -39,7 +39,7 @@ private:
     int m_fd;
 
     static int createDevice();
-    static void destroyDevice(int fd);
+    static void destroyDevice(const int fd);
 
     bool writeEvent(const struct input_event* event) const;
 };

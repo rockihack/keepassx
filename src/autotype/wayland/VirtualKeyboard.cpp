@@ -43,7 +43,7 @@ bool VirtualKeyboard::sendKey(const uint32_t keycode, const bool isKeyDown) cons
 }
 
 //
-// Send unicode character (utf32)
+// Send unicode character in utf32 format
 //
 bool VirtualKeyboard::sendChar(const uint32_t utf32, const bool isKeyDown) const
 {
@@ -56,25 +56,29 @@ bool VirtualKeyboard::sendChar(const uint32_t utf32, const bool isKeyDown) const
 
     // Press modifiers
     if (isKeyDown) {
-        if ((keyBoardState.modmask & XKBMap::MOD_SHIFT) && !m_uInput->sendKey(KEY_LEFTSHIFT, UInput::Keypress)) {
+        if ((keyBoardState.modmask & XKBMap::MOD_SHIFT)
+                && !sendKey(KEY_LEFTSHIFT, true)) {
             return false;
         }
-        if ((keyBoardState.modmask & XKBMap::MOD_ALTGR) && !m_uInput->sendKey(KEY_RIGHTALT, UInput::Keypress)) {
+        if ((keyBoardState.modmask & XKBMap::MOD_ALTGR)
+                && !sendKey(KEY_RIGHTALT, true)) {
             return false;
         }
     }
 
-    // Press key
+    // Press or release key
     if (!sendKey(keyBoardState.keycode, isKeyDown)) {
         return false;
     }
 
     // Release modifiers
     if (!isKeyDown) {
-        if ((keyBoardState.modmask & XKBMap::MOD_ALTGR) && !m_uInput->sendKey(KEY_RIGHTALT, UInput::Release)) {
+        if ((keyBoardState.modmask & XKBMap::MOD_ALTGR)
+                && !sendKey(KEY_RIGHTALT, false)) {
             return false;
         }
-        if ((keyBoardState.modmask & XKBMap::MOD_SHIFT) && !m_uInput->sendKey(KEY_LEFTSHIFT, UInput::Release)) {
+        if ((keyBoardState.modmask & XKBMap::MOD_SHIFT)
+                && !sendKey(KEY_LEFTSHIFT, false)) {
             return false;
         }
     }

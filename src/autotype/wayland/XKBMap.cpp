@@ -19,8 +19,8 @@
 
 #include <linux/input-event-codes.h>
 
-#define LINUX_TO_XKB_KEYCODE(keycode) (keycode + 8)
-#define XKB_TO_LINUX_KEYCODE(keycode) (keycode - 8)
+#define LINUX_TO_XKB_KEYCODE(keycode) ((keycode) + 8)
+#define XKB_TO_LINUX_KEYCODE(keycode) ((keycode) - 8)
 
 XKBMap::XKBMap()
     : m_initialized(false)
@@ -54,7 +54,7 @@ bool XKBMap::lookupChar(const uint32_t utf32, KeyboardState& state) const
         return false;
     }
 
-    UnicodeMap::const_iterator it = m_unicodeMap.find(utf32);
+    std::unordered_map<uint32_t, KeyboardState>::const_iterator it = m_unicodeMap.find(utf32);
     if (it == m_unicodeMap.end()) {
         return false;
     }
@@ -84,7 +84,7 @@ bool XKBMap::buildMap(const xkb_rule_names* xkbRuleNames)
         return false;
     }
 
-    const xkb_mod_mask_t modifierMasks[] = {
+    const uint32_t modifierMasks[] = {
         MOD_ALTGR | MOD_SHIFT,
         MOD_ALTGR,
         MOD_SHIFT,

@@ -1,0 +1,21 @@
+== Wayland Autotype ==
+
+1) Make /dev/uinput writable for keepassx (see udev rule)
+
+2) Start a wayland desktop session (default in Fedora 25)
+
+3) Build keepassx with wayland autotype plugin
+
+4) Configure your xkb keyboard layout
+export XKB_DEFAULT_RULES=evdev
+export XKB_DEFAULT_MODEL=pc105
+export XKB_DEFAULT_LAYOUT=us
+export XKB_DEFAULT_VARIANT=
+export XKB_DEFAULT_OPTIONS=
+
+5) Run: keepassx --platform wayland
+
+6) Trigger autotype (Ctrl + V)
+
+7) Manually switch to target window within 2 seconds
+

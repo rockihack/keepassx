@@ -1,0 +1,9 @@
+#
+# Copy to /etc/udev/rules.d/99-uinput-kpx2.rules
+#
+# Device: /dev/uinput
+# Group:  uinput
+# Mode:   crw--w----
+#
+KERNEL=="uinput", MODE="0620", GROUP="uinput", OPTIONS+="static_node=uinput"
+
