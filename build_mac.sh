@@ -7,8 +7,8 @@
 if cd build; then
     QT5_DIR="/usr/local/opt/qt5"
 
-    export CMAKE_PREFIX_PATH=$QT5_DIR
-    cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release
+    export MACOSX_DEPLOYMENT_TARGET=10.7
+    cmake .. -DCMAKE_PREFIX_PATH=$QT5_DIR -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=Release
     make -j4
 fi
 
