@@ -317,6 +317,12 @@ uint16 AutoTypePlatformMac::qtToNativeKeyCode(Qt::Key key)
         case Qt::Key_Period:
             return kVK_ANSI_Period;
 
+        case Qt::Key_Shift:
+            return kVK_Shift;
+        case Qt::Key_Control:
+            return kVK_Command;
+        case Qt::Key_Alt:
+            return kVK_Option;
         case Qt::Key_Backspace:
             return kVK_Delete;
         case Qt::Key_Tab:
@@ -486,5 +492,22 @@ void AutoTypeExecutorMac::execKey(AutoTypeKey* action)
 {
     m_platform->sendKey(action->key, true);
     m_platform->sendKey(action->key, false);
+    usleep(25 * 1000);
+}
+
+void AutoTypeExecutorMac::execClearField(AutoTypeClearField* action)
+{
+    Q_UNUSED(action);
+
+    m_platform->sendKey(Qt::Key_Home, true);
+    m_platform->sendKey(Qt::Key_Home, false);
+    usleep(25 * 1000);
+    m_platform->sendKey(Qt::Key_Shift, true);
+    m_platform->sendKey(Qt::Key_End, true);
+    m_platform->sendKey(Qt::Key_End, false);
+    m_platform->sendKey(Qt::Key_Shift, false);
+    usleep(25 * 1000);
+    m_platform->sendKey(Qt::Key_Backspace, true);
+    m_platform->sendKey(Qt::Key_Backspace, false);
     usleep(25 * 1000);
 }
