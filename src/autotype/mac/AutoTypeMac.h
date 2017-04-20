@@ -48,8 +48,8 @@ public:
     bool raiseLastActiveWindow() override;
     bool raiseOwnWindow() override;
 
-    void sendChar(const QChar& ch, bool isKeyDown);
-    void sendKey(Qt::Key key, bool isKeyDown);
+    void sendChar(const QChar& ch, bool isKeyDown) const;
+    void sendKey(Qt::Key key, bool isKeyDown, Qt::KeyboardModifiers modifiers) const;
 
 Q_SIGNALS:
     void globalShortcutTriggered();
@@ -61,6 +61,7 @@ private:
 
     static uint16 qtToNativeKeyCode(Qt::Key key);
     static uint16 qtToNativeModifiers(Qt::KeyboardModifiers modifiers);
+    static CGEventFlags qtToNativeEventFlags(Qt::KeyboardModifiers modifiers);
     static int windowLayer(CFDictionaryRef window);
     static QString windowTitle(CFDictionaryRef window);
     static OSStatus hotkeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);
@@ -73,6 +74,7 @@ public:
 
     void execChar(AutoTypeChar* action) override;
     void execKey(AutoTypeKey* action) override;
+    void execClearField(AutoTypeClearField* action) override;
 
 private:
     AutoTypePlatformMac* const m_platform;
