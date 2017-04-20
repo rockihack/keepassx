@@ -186,7 +186,7 @@ bool AutoTypePlatformMac::raiseOwnWindow()
 // Send unicode character to active window
 // see: Quartz Event Services
 //
-void AutoTypePlatformMac::sendChar(const QChar& ch, bool isKeyDown)
+void AutoTypePlatformMac::sendChar(const QChar& ch, bool isKeyDown) const
 {
     CGEventRef keyEvent = ::CGEventCreateKeyboardEvent(nullptr, 0, isKeyDown);
     if (keyEvent != nullptr) {
@@ -201,7 +201,7 @@ void AutoTypePlatformMac::sendChar(const QChar& ch, bool isKeyDown)
 // Send key code to active window
 // see: Quartz Event Services
 //
-void AutoTypePlatformMac::sendKey(Qt::Key key, bool isKeyDown)
+void AutoTypePlatformMac::sendKey(Qt::Key key, bool isKeyDown, Qt::KeyboardModifiers modifiers = Qt::NoModifier) const
 {
     uint16 keyCode = qtToNativeKeyCode(key);
     if (keyCode == INVALID_KEYCODE) {
@@ -210,6 +210,9 @@ void AutoTypePlatformMac::sendKey(Qt::Key key, bool isKeyDown)
 
     CGEventRef keyEvent = ::CGEventCreateKeyboardEvent(nullptr, keyCode, isKeyDown);
     if (keyEvent != nullptr) {
+        if (modifiers != Qt::NoModifier) {
+            ::CGEventSetFlags(keyEvent, qtToNativeEventFlags(modifiers));
+        }
         ::CGEventPost(kCGSessionEventTap, keyEvent);
         ::CFRelease(keyEvent);
     }
@@ -422,6 +425,30 @@ uint16 AutoTypePlatformMac::qtToNativeModifiers(Qt::KeyboardModifiers modifiers)
 }
 
 //
+// Translate qt key modifiers to mac os event flags
+// see: https://doc.qt.io/qt-5/osx-issues.html#special-keys
+//
+CGEventFlags AutoTypePlatformMac::qtToNativeEventFlags(Qt::KeyboardModifiers modifiers)
+{
+    CGEventFlags nativeEventFlags = 0;
+
+    if (modifiers & Qt::ShiftModifier) {
+        nativeEventFlags |= kCGEventFlagMaskShift;
+    }
+    if (modifiers & Qt::ControlModifier) {
+        nativeEventFlags |= kCGEventFlagMaskCommand;
+    }
+    if (modifiers & Qt::AltModifier) {
+        nativeEventFlags |= kCGEventFlagMaskAlternate;
+    }
+    if (modifiers & Qt::MetaModifier) {
+        nativeEventFlags |= kCGEventFlagMaskControl;
+    }
+
+    return nativeEventFlags;
+}
+
+//
 // Get window layer/level
 //
 int AutoTypePlatformMac::windowLayer(CFDictionaryRef window)
@@ -499,12 +526,16 @@ void AutoTypeExecutorMac::execClearField(AutoTypeClearField* action)
 {
     Q_UNUSED(action);
 
-    m_platform->sendKey(Qt::Key_Home, true);
-    m_platform->sendKey(Qt::Key_Home, false);
+    m_platform->sendKey(Qt::Key_Control, true, Qt::ControlModifier);
+    m_platform->sendKey(Qt::Key_Left, true, Qt::ControlModifier);
+    m_platform->sendKey(Qt::Key_Left, false, Qt::ControlModifier);
+    m_platform->sendKey(Qt::Key_Control, false);
     usleep(25 * 1000);
-    m_platform->sendKey(Qt::Key_Shift, true);
-    m_platform->sendKey(Qt::Key_End, true);
-    m_platform->sendKey(Qt::Key_End, false);
+    m_platform->sendKey(Qt::Key_Shift, true, Qt::ShiftModifier);
+    m_platform->sendKey(Qt::Key_Control, true, Qt::ShiftModifier | Qt::ControlModifier);
+    m_platform->sendKey(Qt::Key_Right, true, Qt::ShiftModifier | Qt::ControlModifier);
+    m_platform->sendKey(Qt::Key_Right, false, Qt::ShiftModifier | Qt::ControlModifier);
+    m_platform->sendKey(Qt::Key_Control, false, Qt::ShiftModifier);
     m_platform->sendKey(Qt::Key_Shift, false);
     usleep(25 * 1000);
     m_platform->sendKey(Qt::Key_Backspace, true);
