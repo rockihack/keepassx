@@ -38,9 +38,12 @@ const QString MainWindow::BaseWindowTitle = "KeePassX";
 
 MainWindow::MainWindow()
     : m_ui(new Ui::MainWindow())
+    , m_screenlock(new ScreenLock(this))
     , m_trayIcon(nullptr)
 {
     m_ui->setupUi(this);
+
+    connect(m_screenlock.data(), SIGNAL(locked()), this, SLOT(lockDatabasesAfterInactivity()));
 
     m_countDefaultAttributes = m_ui->menuEntryCopyAttribute->actions().size();
 

@@ -23,6 +23,7 @@
 #include <QSystemTrayIcon>
 
 #include "core/SignalMultiplexer.h"
+#include "core/screenlock/ScreenLock.h"
 #include "gui/DatabaseWidget.h"
 
 namespace Ui {
@@ -79,6 +80,7 @@ private:
     bool isTrayIconEnabled() const;
 
     const QScopedPointer<Ui::MainWindow> m_ui;
+    const QScopedPointer<ScreenLock> m_screenlock;
     SignalMultiplexer m_actionMultiplexer;
     QAction* m_clearHistoryAction;
     QActionGroup* m_lastDatabasesActions;

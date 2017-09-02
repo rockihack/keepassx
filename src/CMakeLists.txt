@@ -61,6 +61,7 @@ set(keepassx_SOURCES
     core/Tools.cpp
     core/Translator.cpp
     core/Uuid.cpp
+    core/screenlock/ScreenLock.cpp
     crypto/Crypto.cpp
     crypto/CryptoHash.cpp
     crypto/Random.cpp
@@ -128,6 +129,12 @@ set(keepassx_SOURCES
     streams/SymmetricCipherStream.cpp
 )
 
+if(MINGW)
+  set(keepassx_SOURCES
+    ${keepassx_SOURCES}
+    core/screenlock/ScreenLockBackendWin.cpp)
+endif()
+
 set(keepassx_SOURCES_MAINEXE
     main.cpp
 )
@@ -164,6 +171,10 @@ qt5_wrap_ui(keepassx_SOURCES ${keepassx_FORMS})
 add_library(keepassx_core STATIC ${keepassx_SOURCES})
 set_target_properties(keepassx_core PROPERTIES COMPILE_DEFINITIONS KEEPASSX_BUILDING_CORE)
 target_link_libraries(keepassx_core Qt5::Core Qt5::Concurrent Qt5::Widgets)
+
+if(MINGW)
+  target_link_libraries(keepassx_core Wtsapi32.lib)
+endif()
 
 add_executable(${PROGNAME} WIN32 MACOSX_BUNDLE ${keepassx_SOURCES_MAINEXE})
 target_link_libraries(${PROGNAME}
