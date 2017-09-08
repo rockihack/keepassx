@@ -64,7 +64,6 @@ bool ScreenLockBackendWin::nativeEventFilter(const QByteArray &eventType, void* 
     if (eventType == QByteArrayLiteral("windows_generic_MSG")
             || eventType == QByteArrayLiteral("windows_dispatcher_MSG")) {
         MSG* msg = static_cast<MSG*>(message);
-
         switch (msg->message) {
         case WM_POWERBROADCAST:
             return dispatchPowerNotification(msg);
@@ -80,6 +79,8 @@ bool ScreenLockBackendWin::nativeEventFilter(const QByteArray &eventType, void* 
 
 bool ScreenLockBackendWin::dispatchPowerNotification(const MSG* msg)
 {
+    Q_ASSERT(msg->message == WM_POWERBROADCAST);
+
     switch (msg->wParam) {
     case PBT_APMSUSPEND:  // System is suspending operation
         Q_EMIT m_screenlock->locked();
@@ -104,6 +105,8 @@ bool ScreenLockBackendWin::dispatchPowerNotification(const MSG* msg)
 
 bool ScreenLockBackendWin::dispatchSessionNotification(const MSG* msg)
 {
+    Q_ASSERT(msg->message == WM_WTSSESSION_CHANGE);
+
     switch (msg->wParam) {
     case WTS_CONSOLE_DISCONNECT:  // The session identified by lParam was disconnected from the console terminal or RemoteFX session
     case WTS_REMOTE_DISCONNECT:  // The session identified by lParam was disconnected from the remote terminal
