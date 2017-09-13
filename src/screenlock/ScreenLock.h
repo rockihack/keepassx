@@ -15,24 +15,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScreenLock.h"
+#ifndef SCREENLOCK_H
+#define SCREENLOCK_H
 
-#if defined(Q_OS_WIN)
-#   include "ScreenLockBackendWin.h"
-#elif defined(Q_OS_OSX)
-#   include "ScreenLockBackendMac.h"
-#elif defined(Q_OS_LINUX)
-#   include "ScreenLockBackendLinux.h"
-#endif
+#include <QWidget>
+#include <QPluginLoader>
 
-ScreenLock::ScreenLock(QWidget* parent)
-    : QObject(parent)
-#if defined(Q_OS_WIN)
-    , m_backend(new ScreenLockBackendWin(this, parent->winId()))
-#elif defined(Q_OS_OSX)
-    , m_backend(new ScreenLockBackendMac(this))
-#elif defined(Q_OS_LINUX)
-    , m_backend(new ScreenLockBackendLinux(this))
-#endif
+#include "ScreenLockPlatformInterface.h"
+
+class ScreenLock : public QObject
 {
-}
+    Q_OBJECT
+
+public:
+    ScreenLock(QWidget* parent = nullptr);
+    ~ScreenLock() = default;
+
+Q_SIGNALS:
+    void locked();
+
+private:
+    QPluginLoader* m_pluginLoader;
+    ScreenLockPlatformInterface* m_plugin;
+
+    void loadPlugin(const QString& pluginPath);
+
+    Q_DISABLE_COPY(ScreenLock)
+};
+
+#endif  // SCREENLOCK_H

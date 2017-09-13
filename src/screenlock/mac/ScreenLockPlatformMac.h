@@ -15,26 +15,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENLOCK_H
-#define SCREENLOCK_H
+#ifndef SCREENLOCK_PLATFORM_MAC_H
+#define SCREENLOCK_PLATFORM_MAC_H
 
-#include <QWidget>
+#include "screenlock/ScreenLockPlatformInterface.h"
 
-#include "ScreenLockBackend.h"
+#include <QObject>
 
-class ScreenLock : public QObject
+class ScreenLock;
+
+class ScreenLockPlatformMac : public QObject, public ScreenLockPlatformInterface
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.keepassx.ScreenLockPlatformMac")
+    Q_INTERFACES(ScreenLockPlatformInterface)
 
 public:
-    ScreenLock(QWidget* parent = nullptr);
-    ~ScreenLock() = default;
+    ScreenLockPlatformMac();
+    ~ScreenLockPlatformMac();
 
-Q_SIGNALS:
-    void locked();
+    void init(ScreenLock* screenlock) override;
 
 private:
-    QScopedPointer<ScreenLockBackend> m_backend;
+    void* self;
 };
 
-#endif  // SCREENLOCK_H
+#endif  // SCREENLOCK_PLATFORM_MAC_H

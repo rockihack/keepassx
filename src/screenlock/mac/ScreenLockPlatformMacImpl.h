@@ -15,11 +15,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENLOCK_BACKEND_H
-#define SCREENLOCK_BACKEND_H
+#import "ScreenLockPlatformMac.h"
 
-class ScreenLockBackend
-{
-};
+#import <Foundation/Foundation.h>
 
-#endif  // SCREENLOCK_BACKEND_H
+@interface ScreenLockPlatformMacImpl : NSObject
+
+@property ScreenLock* screenlock;
+
+@end

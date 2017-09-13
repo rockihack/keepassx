@@ -1,0 +1,7 @@
+if(WIN32)
+  add_subdirectory(windows)
+elseif(APPLE)
+  add_subdirectory(mac)
+elseif(LINUX)
+  add_subdirectory(linux)
+endif()

@@ -23,8 +23,8 @@
 #include <QSystemTrayIcon>
 
 #include "core/SignalMultiplexer.h"
-#include "core/screenlock/ScreenLock.h"
 #include "gui/DatabaseWidget.h"
+#include "screenlock/ScreenLock.h"
 
 namespace Ui {
     class MainWindow;
