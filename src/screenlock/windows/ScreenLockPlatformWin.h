@@ -15,32 +15,39 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENLOCK_BACKEND_WIN_H
-#define SCREENLOCK_BACKEND_WIN_H
+#ifndef SCREENLOCK_PLATFORM_WIN_H
+#define SCREENLOCK_PLATFORM_WIN_H
 
 #include <windows.h>
 #include <QAbstractNativeEventFilter>
 #include <QWidget>
 
-#include "ScreenLockBackend.h"
+#include "screenlock/ScreenLockPlatformInterface.h"
 
 class ScreenLock;
 
-class ScreenLockBackendWin : public ScreenLockBackend, public QAbstractNativeEventFilter
+class ScreenLockPlatformWin : public QObject, public ScreenLockPlatformInterface
 {
-    ScreenLock* const m_screenlock;
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.keepassx.ScreenLockPlatformWin")
+    Q_INTERFACES(ScreenLockPlatformInterface)
+
+public:
+    ScreenLockPlatformWin();
+    ~ScreenLockPlatformWin();
+
+    void init(WId window) override;
+    int platformEventFilter(void* message) override;
+
+Q_SIGNALS:
+    void locked();
+
+private:
     HWND m_hwnd;
     HPOWERNOTIFY m_powerNotify;
 
-public:
-    ScreenLockBackendWin(ScreenLock* const screenlock, WId window);
-    ~ScreenLockBackendWin();
-
-    bool nativeEventFilter(const QByteArray &eventType, void* message, long* result) override;
-
-private:
-    bool dispatchPowerNotification(const MSG* msg);
-    bool dispatchSessionNotification(const MSG* msg);
+    int dispatchPowerNotification(const MSG* msg);
+    int dispatchSessionNotification(const MSG* msg);
 };
 
-#endif  // SCREENLOCK_BACKEND_WIN_H
+#endif  // SCREENLOCK_PLATFORM_WIN_H

@@ -21,6 +21,6 @@
 
 @interface ScreenLockPlatformMacImpl : NSObject
 
-@property ScreenLock* screenlock;
+@property (readonly) ScreenLockPlatformMac* screenlock;
 
 @end

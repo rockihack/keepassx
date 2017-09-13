@@ -18,14 +18,55 @@
 #include "ScreenLock.h"
 
 #include <QApplication>
+#include <QAbstractNativeEventFilter>
+#include <QPluginLoader>
 
 #include "core/FilePath.h"
+#include "screenlock/ScreenLockPlatformInterface.h"
+
+#if defined(Q_OS_WIN)
+class ScreenLockEventFilterWin : public QAbstractNativeEventFilter
+{
+    ScreenLock* m_screenlock;
+
+public:
+    ScreenLockEventFilterWin(ScreenLock* screenlock)
+        : QAbstractNativeEventFilter()
+        , m_screenlock(screenlock)
+    {
+    };
+
+    bool nativeEventFilter(const QByteArray &eventType, void* message, long* result) override
+    {
+        Q_UNUSED(result);
+
+        if (eventType == QByteArrayLiteral("windows_generic_MSG")
+                || eventType == QByteArrayLiteral("windows_dispatcher_MSG")) {
+            int retCode = m_screenlock->callEventFilter(message);
+            if (retCode == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+};
+#endif
 
 ScreenLock::ScreenLock(QWidget* parent)
     : QObject(parent)
     , m_pluginLoader(new QPluginLoader(this))
     , m_plugin(nullptr)
+#if defined(Q_OS_WIN)
+    , m_eventFilter(new ScreenLockEventFilterWin(this))
+#else
+    , m_eventFilter(nullptr)
+#endif
 {
+    if (m_eventFilter) {
+        QApplication::instance()->installNativeEventFilter(m_eventFilter);
+    }
+
     // prevent crash when the plugin has unresolved symbols
     m_pluginLoader->setLoadHints(QLibrary::ResolveAllSymbolsHint);
 
@@ -33,11 +74,18 @@ ScreenLock::ScreenLock(QWidget* parent)
     QString pluginPath = filePath()->pluginPath(pluginName);
 
     if (!pluginPath.isEmpty()) {
-        loadPlugin(pluginPath);
+        loadPlugin(pluginPath, parent);
     }
 }
 
-void ScreenLock::loadPlugin(const QString& pluginPath)
+ScreenLock::~ScreenLock()
+{
+    if (m_eventFilter) {
+        QApplication::instance()->removeNativeEventFilter(m_eventFilter);
+    }
+}
+
+void ScreenLock::loadPlugin(const QString& pluginPath, QWidget* parent)
 {
     m_pluginLoader->setFileName(pluginPath);
 
@@ -45,11 +93,21 @@ void ScreenLock::loadPlugin(const QString& pluginPath)
     if (pluginInstance) {
         m_plugin = qobject_cast<ScreenLockPlatformInterface*>(pluginInstance);
         if (m_plugin) {
-            m_plugin->init(this);
+            m_plugin->init(parent->winId());
+            connect(pluginInstance, SIGNAL(locked()), this, SIGNAL(locked()));
         }
     }
 
     if (!m_plugin) {
         qWarning("Unable to load screenlock plugin:\n%s", qPrintable(m_pluginLoader->errorString()));
     }
+}
+
+int ScreenLock::callEventFilter(void* message) const
+{
+    if (!m_plugin) {
+        return -1;
+    }
+
+    return m_plugin->platformEventFilter(message);
 }

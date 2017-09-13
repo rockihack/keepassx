@@ -43,7 +43,7 @@ MainWindow::MainWindow()
 {
     m_ui->setupUi(this);
 
-    connect(m_screenlock.data(), SIGNAL(locked()), this, SLOT(lockDatabasesAfterInactivity()));
+    connect(m_screenlock, SIGNAL(locked()), this, SLOT(lockDatabasesAfterInactivity()));
 
     m_countDefaultAttributes = m_ui->menuEntryCopyAttribute->actions().size();
 

@@ -18,9 +18,9 @@
 #ifndef SCREENLOCK_PLATFORM_MAC_H
 #define SCREENLOCK_PLATFORM_MAC_H
 
-#include "screenlock/ScreenLockPlatformInterface.h"
-
 #include <QObject>
+
+#include "screenlock/ScreenLockPlatformInterface.h"
 
 class ScreenLock;
 
@@ -34,7 +34,11 @@ public:
     ScreenLockPlatformMac();
     ~ScreenLockPlatformMac();
 
-    void init(ScreenLock* screenlock) override;
+    void init(WId window) override;
+    int platformEventFilter(void* message) override;
+
+Q_SIGNALS:
+    void locked();
 
 private:
     void* self;

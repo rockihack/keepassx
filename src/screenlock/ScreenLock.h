@@ -19,9 +19,10 @@
 #define SCREENLOCK_H
 
 #include <QWidget>
-#include <QPluginLoader>
 
-#include "ScreenLockPlatformInterface.h"
+class QPluginLoader;
+class ScreenLockPlatformInterface;
+class QAbstractNativeEventFilter;
 
 class ScreenLock : public QObject
 {
@@ -29,16 +30,19 @@ class ScreenLock : public QObject
 
 public:
     ScreenLock(QWidget* parent = nullptr);
-    ~ScreenLock() = default;
+    ~ScreenLock();
+
+    int callEventFilter(void* message) const;
 
 Q_SIGNALS:
     void locked();
 
 private:
-    QPluginLoader* m_pluginLoader;
+    QPluginLoader* const m_pluginLoader;
     ScreenLockPlatformInterface* m_plugin;
+    QAbstractNativeEventFilter* const m_eventFilter;
 
-    void loadPlugin(const QString& pluginPath);
+    void loadPlugin(const QString& pluginPath, QWidget* parent);
 
     Q_DISABLE_COPY(ScreenLock)
 };

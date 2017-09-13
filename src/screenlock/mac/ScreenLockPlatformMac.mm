@@ -16,22 +16,36 @@
  */
 
 #include "ScreenLockPlatformMacImpl.h"
-#include "screenlock/ScreenLock.h"
 
 #import <Foundation/NSDistributedNotificationCenter.h>
 #import <AppKit/NSWorkspace.h>
+
+#include "screenlock/ScreenLock.h"
 
 @implementation ScreenLockPlatformMacImpl
 
 ScreenLockPlatformMac::ScreenLockPlatformMac()
 {
-    self = [[ScreenLockPlatformMacImpl alloc] init];
+    self = [[ScreenLockPlatformMacImpl alloc] init:this];
+}
+
+ScreenLockPlatformMac::~ScreenLockPlatformMac()
+{
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:static_cast<id>(self)];
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:static_cast<id>(self)];
+    [static_cast<id>(self) dealloc];
+}
+
+void ScreenLockPlatformMac::init(WId window)
+{
+    Q_UNUSED(window);
+
     // Lockscreen notification
     [[NSDistributedNotificationCenter defaultCenter] addObserver:static_cast<id>(self)
-                                                           selector:@selector(screenLockObserver:)
-                                                               name:@"com.apple.screenIsLocked"
-                                                             object:nil
-                                                 suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
+                                                        selector:@selector(screenLockObserver:)
+                                                            name:@"com.apple.screenIsLocked"
+                                                          object:nil
+                                              suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
     // Sleep notification
     [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:static_cast<id>(self)
                                                            selector:@selector(screenLockObserver:)
@@ -44,31 +58,32 @@ ScreenLockPlatformMac::ScreenLockPlatformMac()
                                                              object:nil];
 }
 
-ScreenLockPlatformMac::~ScreenLockPlatformMac()
+int ScreenLockPlatformMac::platformEventFilter(void* message)
 {
-    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:static_cast<id>(self)];
-    [[NSDistributedNotificationCenter defaultCenter] removeObserver:static_cast<id>(self)];
-    [static_cast<id>(self) dealloc];
+    Q_UNUSED(message);
+    Q_ASSERT(false);
+
+    return -1;
 }
 
-- (void) setScreenLock:(ScreenLock*) screenlock
+- (id) init:(ScreenLockPlatformMac*) screenlock
 {
-    self.screenlock = screenlock;
+    self = [super init];
+
+    if (self) {
+        _screenlock = screenlock;
+    }
+
+    return self;
 }
 
 - (void) screenLockObserver:(NSNotification*) notification
 {
     Q_UNUSED(notification);
 
-    ScreenLock* screenlock = self.screenlock;
-    if (screenlock != nullptr) {
-        Q_EMIT screenlock->locked();
+    if (_screenlock != nullptr) {
+        Q_EMIT _screenlock->locked();
     }
-}
-
-void ScreenLockPlatformMac::init(ScreenLock* const screenlock)
-{
-    [static_cast<id>(self) setScreenlock:screenlock];
 }
 
 @end

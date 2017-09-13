@@ -18,9 +18,8 @@
 #ifndef SCREENLOCK_PLATFORM_PLUGIN_H
 #define SCREENLOCK_PLATFORM_PLUGIN_H
 
-#include <QObject>
-
-class ScreenLock;
+#include <QtPlugin>
+#include <QWidget>
 
 class ScreenLockPlatformInterface
 {
@@ -28,7 +27,8 @@ public:
     ScreenLockPlatformInterface() = default;
     virtual ~ScreenLockPlatformInterface() = default;
 
-    virtual void init(ScreenLock* screenlock) = 0;
+    virtual void init(WId window) = 0;
+    virtual int platformEventFilter(void* message) = 0;
 };
 
 Q_DECLARE_INTERFACE(ScreenLockPlatformInterface, "org.keepassx.ScreenLockPlatformInterface/1");

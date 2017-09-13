@@ -80,7 +80,7 @@ private:
     bool isTrayIconEnabled() const;
 
     const QScopedPointer<Ui::MainWindow> m_ui;
-    const QScopedPointer<ScreenLock> m_screenlock;
+    ScreenLock* m_screenlock;
     SignalMultiplexer m_actionMultiplexer;
     QAction* m_clearHistoryAction;
     QActionGroup* m_lastDatabasesActions;
