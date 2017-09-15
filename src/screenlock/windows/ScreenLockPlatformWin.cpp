@@ -15,28 +15,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScreenLockBackendWin.h"
+#include "ScreenLockPlatformWin.h"
 
 #include <wtsapi32.h>
-#include <QApplication>
 
-#include "ScreenLock.h"
+#include "screenlock/ScreenLock.h"
 
-ScreenLockBackendWin::ScreenLockBackendWin(ScreenLock* const screenlock, WId window)
-    : QAbstractNativeEventFilter()
-    , m_screenlock(screenlock)
-    , m_hwnd(reinterpret_cast<HWND>(window))
+ScreenLockPlatformWin::ScreenLockPlatformWin()
+    : m_hwnd(nullptr)
     , m_powerNotify(nullptr)
 {
-    QCoreApplication::instance()->installNativeEventFilter(this);
+}
 
-    if (!WTSRegisterSessionNotification(
+ScreenLockPlatformWin::~ScreenLockPlatformWin()
+{
+    if (m_powerNotify != nullptr) {
+        ::UnregisterPowerSettingNotification(m_powerNotify);
+    }
+    if (m_hwnd != nullptr) {
+        ::WTSUnRegisterSessionNotification(m_hwnd);
+    }
+}
+
+void ScreenLockPlatformWin::init(WId window)
+{
+    HWND hwnd = reinterpret_cast<HWND>(window);
+    if (!::IsWindow(hwnd)) {
+        qWarning("Invalid hwnd");
+        return;
+    }
+    m_hwnd = hwnd;
+
+    if (!::WTSRegisterSessionNotification(
             m_hwnd,
             NOTIFY_FOR_THIS_SESSION)) {
         qWarning("WTSRegisterSessionNotification failed");
     }
 
-    m_powerNotify = RegisterPowerSettingNotification(
+    m_powerNotify = ::RegisterPowerSettingNotification(
             m_hwnd,
             &GUID_LIDSWITCH_STATE_CHANGE,
             DEVICE_NOTIFY_WINDOW_HANDLE);
@@ -45,46 +61,28 @@ ScreenLockBackendWin::ScreenLockBackendWin(ScreenLock* const screenlock, WId win
     }
 }
 
-ScreenLockBackendWin::~ScreenLockBackendWin()
+int ScreenLockPlatformWin::platformEventFilter(void* message)
 {
-    if (m_powerNotify != nullptr) {
-        UnregisterPowerSettingNotification(m_powerNotify);
-    }
-    if (m_hwnd != nullptr) {
-        WTSUnRegisterSessionNotification(m_hwnd);
-    }
+    MSG* msg = static_cast<MSG*>(message);
 
-    QCoreApplication::instance()->removeNativeEventFilter(this);
+    switch (msg->message) {
+    case WM_POWERBROADCAST:
+        return dispatchPowerNotification(msg);
+    case WM_WTSSESSION_CHANGE:
+        return dispatchSessionNotification(msg);
+    default:
+        return -1;
+    }
 }
 
-bool ScreenLockBackendWin::nativeEventFilter(const QByteArray &eventType, void* message, long* result)
-{
-    Q_UNUSED(result);
-
-    if (eventType == QByteArrayLiteral("windows_generic_MSG")
-            || eventType == QByteArrayLiteral("windows_dispatcher_MSG")) {
-        MSG* msg = static_cast<MSG*>(message);
-        switch (msg->message) {
-        case WM_POWERBROADCAST:
-            return dispatchPowerNotification(msg);
-        case WM_WTSSESSION_CHANGE:
-            return dispatchSessionNotification(msg);
-        default:
-            return false;
-        }
-    }
-
-    return false;
-}
-
-bool ScreenLockBackendWin::dispatchPowerNotification(const MSG* msg)
+int ScreenLockPlatformWin::dispatchPowerNotification(const MSG* msg)
 {
     Q_ASSERT(msg->message == WM_POWERBROADCAST);
 
     switch (msg->wParam) {
     case PBT_APMSUSPEND:  // System is suspending operation
-        Q_EMIT m_screenlock->locked();
-        return true;
+        Q_EMIT locked();
+        return 1;
     case PBT_POWERSETTINGCHANGE:  // A power setting change event has been received
     {
         const POWERBROADCAST_SETTING* setting = reinterpret_cast<const POWERBROADCAST_SETTING*>(msg->lParam);
@@ -92,18 +90,18 @@ bool ScreenLockBackendWin::dispatchPowerNotification(const MSG* msg)
                     && setting->PowerSetting == GUID_LIDSWITCH_STATE_CHANGE) {
             const DWORD lidState = *reinterpret_cast<const DWORD*>(&setting->Data);
             if (lidState == 0) {  // Lid was closed
-                Q_EMIT m_screenlock->locked();
-                return true;
+                Q_EMIT locked();
+                return 1;
             }
         }
-        return false;
+        return -1;
     }
     default:
-        return false;
+        return -1;
     }
 }
 
-bool ScreenLockBackendWin::dispatchSessionNotification(const MSG* msg)
+int ScreenLockPlatformWin::dispatchSessionNotification(const MSG* msg)
 {
     Q_ASSERT(msg->message == WM_WTSSESSION_CHANGE);
 
@@ -112,9 +110,9 @@ bool ScreenLockBackendWin::dispatchSessionNotification(const MSG* msg)
     case WTS_REMOTE_DISCONNECT:  // The session identified by lParam was disconnected from the remote terminal
     case WTS_SESSION_LOGOFF:  // A user has logged off the session identified by lParam
     case WTS_SESSION_LOCK:  // The session identified by lParam has been locked
-        Q_EMIT m_screenlock->locked();
-        return true;
+        Q_EMIT locked();
+        return 1;
     default:
-        return false;
+        return -1;
     }
 }

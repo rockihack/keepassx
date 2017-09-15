@@ -15,11 +15,36 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENLOCK_BACKEND_H
-#define SCREENLOCK_BACKEND_H
+#ifndef SCREENLOCK_H
+#define SCREENLOCK_H
 
-class ScreenLockBackend
+#include <QWidget>
+
+class QPluginLoader;
+class ScreenLockPlatformInterface;
+class QAbstractNativeEventFilter;
+
+class ScreenLock : public QObject
 {
+    Q_OBJECT
+
+public:
+    ScreenLock(QWidget* parent = nullptr);
+    ~ScreenLock();
+
+    int callEventFilter(void* message) const;
+
+Q_SIGNALS:
+    void locked();
+
+private:
+    QPluginLoader* const m_pluginLoader;
+    ScreenLockPlatformInterface* m_plugin;
+    QAbstractNativeEventFilter* const m_eventFilter;
+
+    void loadPlugin(const QString& pluginPath, QWidget* parent);
+
+    Q_DISABLE_COPY(ScreenLock)
 };
 
-#endif  // SCREENLOCK_BACKEND_H
+#endif  // SCREENLOCK_H

@@ -15,26 +15,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENLOCK_H
-#define SCREENLOCK_H
+#import "ScreenLockPlatformMac.h"
 
-#include <QWidget>
+#import <Foundation/Foundation.h>
 
-#include "ScreenLockBackend.h"
+@interface ScreenLockPlatformMacImpl : NSObject
 
-class ScreenLock : public QObject
-{
-    Q_OBJECT
+@property (readonly) ScreenLockPlatformMac* screenlock;
 
-public:
-    ScreenLock(QWidget* parent = nullptr);
-    ~ScreenLock() = default;
-
-Q_SIGNALS:
-    void locked();
-
-private:
-    QScopedPointer<ScreenLockBackend> m_backend;
-};
-
-#endif  // SCREENLOCK_H
+@end

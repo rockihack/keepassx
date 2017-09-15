@@ -61,7 +61,6 @@ set(keepassx_SOURCES
     core/Tools.cpp
     core/Translator.cpp
     core/Uuid.cpp
-    core/screenlock/ScreenLock.cpp
     crypto/Crypto.cpp
     crypto/CryptoHash.cpp
     crypto/Random.cpp
@@ -122,18 +121,13 @@ set(keepassx_SOURCES
     keys/FileKey.cpp
     keys/Key.h
     keys/PasswordKey.cpp
+    screenlock/ScreenLock.cpp
     streams/HashedBlockStream.cpp
     streams/LayeredStream.cpp
     streams/qtiocompressor.cpp
     streams/StoreDataStream.cpp
     streams/SymmetricCipherStream.cpp
 )
-
-if(MINGW)
-  set(keepassx_SOURCES
-    ${keepassx_SOURCES}
-    core/screenlock/ScreenLockBackendWin.cpp)
-endif()
 
 set(keepassx_SOURCES_MAINEXE
     main.cpp
@@ -172,10 +166,6 @@ add_library(keepassx_core STATIC ${keepassx_SOURCES})
 set_target_properties(keepassx_core PROPERTIES COMPILE_DEFINITIONS KEEPASSX_BUILDING_CORE)
 target_link_libraries(keepassx_core Qt5::Core Qt5::Concurrent Qt5::Widgets)
 
-if(MINGW)
-  target_link_libraries(keepassx_core Wtsapi32.lib)
-endif()
-
 add_executable(${PROGNAME} WIN32 MACOSX_BUNDLE ${keepassx_SOURCES_MAINEXE})
 target_link_libraries(${PROGNAME}
                       keepassx_core
@@ -198,6 +188,7 @@ install(TARGETS ${PROGNAME}
         RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
 
 add_subdirectory(autotype)
+add_subdirectory(screenlock)
 
 if(APPLE)
   if(QT_MAC_USE_COCOA AND EXISTS "${QT_LIBRARY_DIR}/Resources/qt_menu.nib")
