@@ -15,12 +15,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ScreenLockPlatformMacImpl.h"
+#import "ScreenLockPlatformMacImpl.h"
 
 #import <Foundation/NSDistributedNotificationCenter.h>
 #import <AppKit/NSWorkspace.h>
-
-#include "screenlock/ScreenLock.h"
 
 @implementation ScreenLockPlatformMacImpl
 
@@ -36,9 +34,9 @@ ScreenLockPlatformMac::~ScreenLockPlatformMac()
     [static_cast<id>(self) dealloc];
 }
 
-void ScreenLockPlatformMac::init(WId window)
+void ScreenLockPlatformMac::init(QWidget* mainWindow)
 {
-    Q_UNUSED(window);
+    Q_UNUSED(mainWindow);
 
     // Lockscreen notification
     [[NSDistributedNotificationCenter defaultCenter] addObserver:static_cast<id>(self)
@@ -81,7 +79,7 @@ int ScreenLockPlatformMac::platformEventFilter(void* message)
 {
     Q_UNUSED(notification);
 
-    if (_screenlock != nullptr) {
+    if (_screenlock) {
         Q_EMIT _screenlock->locked();
     }
 }

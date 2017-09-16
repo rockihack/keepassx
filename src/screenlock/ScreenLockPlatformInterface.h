@@ -15,8 +15,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCREENLOCK_PLATFORM_PLUGIN_H
-#define SCREENLOCK_PLATFORM_PLUGIN_H
+#ifndef SCREENLOCK_PLATFORM_INTERFACE_H
+#define SCREENLOCK_PLATFORM_INTERFACE_H
 
 #include <QtPlugin>
 #include <QWidget>
@@ -24,13 +24,12 @@
 class ScreenLockPlatformInterface
 {
 public:
-    ScreenLockPlatformInterface() = default;
     virtual ~ScreenLockPlatformInterface() = default;
 
-    virtual void init(WId window) = 0;
+    virtual void init(QWidget* mainWindow) = 0;
     virtual int platformEventFilter(void* message) = 0;
 };
 
 Q_DECLARE_INTERFACE(ScreenLockPlatformInterface, "org.keepassx.ScreenLockPlatformInterface/1");
 
-#endif  // SCREENLOCK_PLATFORM_PLUGIN_H
+#endif  // SCREENLOCK_PLATFORM_INTERFACE_H

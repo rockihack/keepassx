@@ -19,7 +19,9 @@
 
 #include <QDBusConnection>
 
-#include "screenlock/ScreenLock.h"
+ScreenLockPlatformXCB::ScreenLockPlatformXCB()
+{
+}
 
 ScreenLockPlatformXCB::~ScreenLockPlatformXCB()
 {
@@ -51,9 +53,9 @@ ScreenLockPlatformXCB::~ScreenLockPlatformXCB()
         SLOT(screensaverActiveChanged(bool)));
 }
 
-void ScreenLockPlatformXCB::init(WId window)
+void ScreenLockPlatformXCB::init(QWidget* mainWindow)
 {
-    Q_UNUSED(window);
+    Q_UNUSED(mainWindow);
 
     QDBusConnection sessionBus = QDBusConnection::sessionBus();
 

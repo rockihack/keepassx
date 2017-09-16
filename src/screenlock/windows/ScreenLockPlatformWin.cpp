@@ -19,8 +19,6 @@
 
 #include <wtsapi32.h>
 
-#include "screenlock/ScreenLock.h"
-
 ScreenLockPlatformWin::ScreenLockPlatformWin()
     : m_hwnd(nullptr)
     , m_powerNotify(nullptr)
@@ -37,9 +35,9 @@ ScreenLockPlatformWin::~ScreenLockPlatformWin()
     }
 }
 
-void ScreenLockPlatformWin::init(WId window)
+void ScreenLockPlatformWin::init(QWidget* mainWindow)
 {
-    HWND hwnd = reinterpret_cast<HWND>(window);
+    HWND hwnd = reinterpret_cast<HWND>(mainWindow->winId());
     if (!::IsWindow(hwnd)) {
         qWarning("Invalid hwnd");
         return;

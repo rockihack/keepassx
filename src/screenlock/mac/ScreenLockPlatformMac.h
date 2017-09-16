@@ -22,8 +22,6 @@
 
 #include "screenlock/ScreenLockPlatformInterface.h"
 
-class ScreenLock;
-
 class ScreenLockPlatformMac : public QObject, public ScreenLockPlatformInterface
 {
     Q_OBJECT
@@ -34,7 +32,7 @@ public:
     ScreenLockPlatformMac();
     ~ScreenLockPlatformMac();
 
-    void init(WId window) override;
+    void init(QWidget* mainWindow) override;
     int platformEventFilter(void* message) override;
 
 Q_SIGNALS:
