@@ -22,8 +22,6 @@
 
 #include "screenlock/ScreenLockPlatformInterface.h"
 
-class ScreenLock;
-
 class ScreenLockPlatformXCB : public QObject, public ScreenLockPlatformInterface
 {
     Q_OBJECT
@@ -31,10 +29,10 @@ class ScreenLockPlatformXCB : public QObject, public ScreenLockPlatformInterface
     Q_INTERFACES(ScreenLockPlatformInterface)
 
 public:
-    ScreenLockPlatformXCB() = default;
+    ScreenLockPlatformXCB();
     ~ScreenLockPlatformXCB();
 
-    void init(WId window) override;
+    void init(QWidget* mainWindow) override;
     int platformEventFilter(void* message) override;
 
 Q_SIGNALS:

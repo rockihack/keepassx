@@ -18,11 +18,11 @@
 #ifndef SCREENLOCK_H
 #define SCREENLOCK_H
 
-#include <QWidget>
+#include <QObject>
 
+class QAbstractNativeEventFilter;
 class QPluginLoader;
 class ScreenLockPlatformInterface;
-class QAbstractNativeEventFilter;
 
 class ScreenLock : public QObject
 {
@@ -38,9 +38,9 @@ Q_SIGNALS:
     void locked();
 
 private:
+    QAbstractNativeEventFilter* const m_eventFilter;
     QPluginLoader* const m_pluginLoader;
     ScreenLockPlatformInterface* m_plugin;
-    QAbstractNativeEventFilter* const m_eventFilter;
 
     void loadPlugin(const QString& pluginPath, QWidget* parent);
 

@@ -31,8 +31,7 @@ class ScreenLockEventFilterWin : public QAbstractNativeEventFilter
 
 public:
     ScreenLockEventFilterWin(ScreenLock* screenlock)
-        : QAbstractNativeEventFilter()
-        , m_screenlock(screenlock)
+        : m_screenlock(screenlock)
     {
     };
 
@@ -53,15 +52,17 @@ public:
 };
 #endif
 
-ScreenLock::ScreenLock(QWidget* parent)
-    : QObject(parent)
-    , m_pluginLoader(new QPluginLoader(this))
-    , m_plugin(nullptr)
+ScreenLock::ScreenLock(QWidget* mainWindow)
+    : QObject(mainWindow)
+
 #if defined(Q_OS_WIN)
     , m_eventFilter(new ScreenLockEventFilterWin(this))
 #else
     , m_eventFilter(nullptr)
 #endif
+
+    , m_pluginLoader(new QPluginLoader(this))
+    , m_plugin(nullptr)
 {
     if (m_eventFilter) {
         QApplication::instance()->installNativeEventFilter(m_eventFilter);
@@ -74,7 +75,7 @@ ScreenLock::ScreenLock(QWidget* parent)
     QString pluginPath = filePath()->pluginPath(pluginName);
 
     if (!pluginPath.isEmpty()) {
-        loadPlugin(pluginPath, parent);
+        loadPlugin(pluginPath, mainWindow);
     }
 }
 
@@ -85,7 +86,7 @@ ScreenLock::~ScreenLock()
     }
 }
 
-void ScreenLock::loadPlugin(const QString& pluginPath, QWidget* parent)
+void ScreenLock::loadPlugin(const QString& pluginPath, QWidget* mainWindow)
 {
     m_pluginLoader->setFileName(pluginPath);
 
@@ -93,7 +94,7 @@ void ScreenLock::loadPlugin(const QString& pluginPath, QWidget* parent)
     if (pluginInstance) {
         m_plugin = qobject_cast<ScreenLockPlatformInterface*>(pluginInstance);
         if (m_plugin) {
-            m_plugin->init(parent->winId());
+            m_plugin->init(mainWindow);
             connect(pluginInstance, SIGNAL(locked()), this, SIGNAL(locked()));
         }
     }

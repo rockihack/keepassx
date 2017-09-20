@@ -19,12 +19,9 @@
 #define SCREENLOCK_PLATFORM_WIN_H
 
 #include <windows.h>
-#include <QAbstractNativeEventFilter>
-#include <QWidget>
+#include <QObject>
 
 #include "screenlock/ScreenLockPlatformInterface.h"
-
-class ScreenLock;
 
 class ScreenLockPlatformWin : public QObject, public ScreenLockPlatformInterface
 {
@@ -36,7 +33,7 @@ public:
     ScreenLockPlatformWin();
     ~ScreenLockPlatformWin();
 
-    void init(WId window) override;
+    void init(QWidget* mainWindow) override;
     int platformEventFilter(void* message) override;
 
 Q_SIGNALS:
