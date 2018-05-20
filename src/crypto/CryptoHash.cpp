@@ -47,7 +47,7 @@ CryptoHash::CryptoHash(CryptoHash::Algorithm algo)
         break;
     }
 
-    gcry_error_t error = gcry_md_open(&d->ctx, algoGcrypt, 0);
+    gcry_error_t error = gcry_md_open(&d->ctx, algoGcrypt, GCRY_MD_FLAG_SECURE);
     Q_ASSERT(error == 0); // TODO: error handling
     Q_UNUSED(error);
 
