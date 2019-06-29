@@ -18,7 +18,6 @@
 #ifndef KEEPASSX_AUTOTYPEMAC_H
 #define KEEPASSX_AUTOTYPEMAC_H
 
-#include <Carbon/Carbon.h>
 #include <QtPlugin>
 #include <memory>
 
@@ -56,15 +55,13 @@ Q_SIGNALS:
 
 private:
     std::unique_ptr<AppKit> m_appkit;
-    EventHotKeyRef m_hotkeyRef;
-    EventHotKeyID m_hotkeyId;
+    void *m_globalMonitor;
 
-    static uint16 qtToNativeKeyCode(Qt::Key key);
-    static uint16 qtToNativeModifiers(Qt::KeyboardModifiers modifiers);
-    static CGEventFlags qtToNativeEventFlags(Qt::KeyboardModifiers modifiers);
+    static CGKeyCode qtToNativeKeyCode(Qt::Key key);
+    static CGEventFlags qtToNativeModifiers(Qt::KeyboardModifiers modifiers);
     static int windowLayer(CFDictionaryRef window);
     static QString windowTitle(CFDictionaryRef window);
-    static OSStatus hotkeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData);
+    static void hotkeyHandler(void *userData);
 };
 
 class AutoTypeExecutorMac : public AutoTypeExecutor
