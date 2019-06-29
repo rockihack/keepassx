@@ -50,6 +50,31 @@ AppKit::~AppKit()
 }
 
 //
+// Add global event monitor
+//
+- (id) addGlobalMonitor:(NSEventMask) mask handler:(void (^)(NSEvent *)) handler
+{
+    return [NSEvent addGlobalMonitorForEventsMatchingMask:mask handler:handler];
+}
+
+//
+// Remove global event monitor
+//
+- (void) removeGlobalMonitor:(id) monitor
+{
+    [NSEvent removeMonitor:monitor];
+}
+
+//
+// Check if accessibility is enabled, may show an popup asking for permissions
+//
+- (bool) enableAccessibility
+{
+    NSDictionary *opts = @{static_cast<id>(kAXTrustedCheckOptionPrompt): @YES};
+    return AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef>(opts));
+}
+
+//
 // Get process id of frontmost application (-> keyboard input)
 //
 - (pid_t) activeProcessId
@@ -78,6 +103,25 @@ AppKit::~AppKit()
 //
 // ------------------------- C++ Trampolines -------------------------
 //
+
+void* AppKit::addGlobalMonitor(CGKeyCode keycode, CGEventFlags modifier, void *userData, void (*handler)(void *))
+{
+    return [static_cast<id>(self) addGlobalMonitor:NSEventMaskKeyDown handler:^(NSEvent *event) {
+        if (event.keyCode == keycode && (event.modifierFlags & modifier) == modifier) {
+            handler(userData);
+        }
+    }];
+}
+
+void AppKit::removeGlobalMonitor(void *monitor)
+{
+    return [static_cast<id>(self) removeGlobalMonitor:static_cast<id>(monitor)];
+}
+
+bool AppKit::enableAccessibility()
+{
+    return [static_cast<id>(self) enableAccessibility];
+}
 
 pid_t AppKit::lastActiveProcessId()
 {
