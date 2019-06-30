@@ -52,6 +52,7 @@ set(keepassx_SOURCES
     core/Group.cpp
     core/InactivityTimer.cpp
     core/ListDeleter.h
+    core/MemoryEncryption.cpp
     core/Metadata.cpp
     core/PasswordGenerator.cpp
     core/SignalMultiplexer.cpp

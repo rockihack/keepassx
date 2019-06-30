@@ -491,6 +491,11 @@ void EditEntryWidget::clear()
     m_autoTypeAssoc->clear();
     m_historyModel->clear();
     m_iconsWidget->reset();
+    m_mainUi->titleEdit->clear();
+    m_mainUi->usernameEdit->clear();
+    m_mainUi->urlEdit->clear();
+    m_mainUi->passwordEdit->clear();
+    m_mainUi->passwordRepeatEdit->clear();
 }
 
 bool EditEntryWidget::hasBeenModified() const

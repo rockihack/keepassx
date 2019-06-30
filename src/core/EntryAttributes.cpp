@@ -16,6 +16,7 @@
  */
 
 #include "EntryAttributes.h"
+#include "core/MemoryEncryption.h"
 
 const QString EntryAttributes::TitleKey = "Title";
 const QString EntryAttributes::UserNameKey = "UserName";
@@ -55,7 +56,13 @@ QList<QString> EntryAttributes::customKeys()
 
 QString EntryAttributes::value(const QString& key) const
 {
-    return m_attributes.value(key);
+    if (m_protectedAttributes.contains(key)) {
+        bool ok;
+        QString plaintext = MemoryEncryption::instance()->decrypt(m_attributes.value(key), &ok);
+        return plaintext;
+    } else {
+        return m_attributes.value(key);
+    }
 }
 
 bool EntryAttributes::isProtected(const QString& key) const
@@ -68,7 +75,7 @@ void EntryAttributes::set(const QString& key, const QString& value, bool protect
     bool emitModified = false;
 
     bool addAttribute = !m_attributes.contains(key);
-    bool changeValue = !addAttribute && (m_attributes.value(key) != value);
+    bool changeValue = !addAttribute && (EntryAttributes::value(key) != value);
     bool defaultAttribute = isDefaultAttribute(key);
 
     if (addAttribute && !defaultAttribute) {
@@ -76,7 +83,13 @@ void EntryAttributes::set(const QString& key, const QString& value, bool protect
     }
 
     if (addAttribute || changeValue) {
-        m_attributes.insert(key, value);
+        if (protect) {
+            bool ok;
+            QString ciphertext = MemoryEncryption::instance()->encrypt(value, &ok);
+            m_attributes.insert(key, ciphertext);
+        } else {
+            m_attributes.insert(key, value);
+        }
         emitModified = true;
     }
 
