@@ -128,7 +128,10 @@ void AutoTypePlatformMac::unregisterGlobalShortcut(Qt::Key key, Qt::KeyboardModi
     Q_UNUSED(key);
     Q_UNUSED(modifiers);
 
-    m_appkit->removeGlobalMonitor(m_globalMonitor);
+    if (m_globalMonitor) {
+        m_appkit->removeGlobalMonitor(m_globalMonitor);
+        m_globalMonitor = nullptr;
+    }
 }
 
 int AutoTypePlatformMac::platformEventFilter(void* event)
