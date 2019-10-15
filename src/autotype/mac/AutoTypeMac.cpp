@@ -31,11 +31,11 @@ AutoTypePlatformMac::AutoTypePlatformMac()
 }
 
 //
-// Keepassx requires mac os 10.7
+// Request permissions for auto-type
 //
 bool AutoTypePlatformMac::isAvailable()
 {
-    return m_appkit->enableAccessibility();
+    return m_appkit->requestPermissions();
 }
 
 //
