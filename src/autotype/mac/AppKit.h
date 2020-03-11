@@ -30,7 +30,7 @@ public:
 
     void *addGlobalMonitor(CGKeyCode keycode, CGEventFlags modifier, void *userData, void (*handler)(void *));
     void removeGlobalMonitor(void *monitor);
-    bool requestPermissions();
+    bool enableAccessibility();
     pid_t lastActiveProcessId();
     pid_t activeProcessId();
     pid_t ownProcessId();

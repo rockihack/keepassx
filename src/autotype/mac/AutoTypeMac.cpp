@@ -31,11 +31,11 @@ AutoTypePlatformMac::AutoTypePlatformMac()
 }
 
 //
-// Request permissions for auto-type
+// Keepassx requires mac os 10.7
 //
 bool AutoTypePlatformMac::isAvailable()
 {
-    return m_appkit->requestPermissions();
+    return m_appkit->enableAccessibility();
 }
 
 //
@@ -128,10 +128,7 @@ void AutoTypePlatformMac::unregisterGlobalShortcut(Qt::Key key, Qt::KeyboardModi
     Q_UNUSED(key);
     Q_UNUSED(modifiers);
 
-    if (m_globalMonitor) {
-        m_appkit->removeGlobalMonitor(m_globalMonitor);
-        m_globalMonitor = nullptr;
-    }
+    m_appkit->removeGlobalMonitor(m_globalMonitor);
 }
 
 int AutoTypePlatformMac::platformEventFilter(void* event)

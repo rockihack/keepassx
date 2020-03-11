@@ -66,20 +66,10 @@ AppKit::~AppKit()
 }
 
 //
-// Request permissions for auto-type
+// Check if accessibility is enabled, may show an popup asking for permissions
 //
-- (bool) requestPermissions
+- (bool) enableAccessibility
 {
-    // Screen recording
-    CGImageRef screenshot = CGWindowListCreateImage(
-        CGRectMake(0, 0, 1, 1),
-        kCGWindowListOptionOnScreenOnly,
-        kCGNullWindowID,
-        kCGWindowImageDefault
-    );
-    CFRelease(screenshot);
-
-    // Accessibility
     NSDictionary *opts = @{static_cast<id>(kAXTrustedCheckOptionPrompt): @YES};
     return AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef>(opts));
 }
@@ -128,9 +118,9 @@ void AppKit::removeGlobalMonitor(void *monitor)
     return [static_cast<id>(self) removeGlobalMonitor:static_cast<id>(monitor)];
 }
 
-bool AppKit::requestPermissions()
+bool AppKit::enableAccessibility()
 {
-    return [static_cast<id>(self) requestPermissions];
+    return [static_cast<id>(self) enableAccessibility];
 }
 
 pid_t AppKit::lastActiveProcessId()

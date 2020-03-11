@@ -27,7 +27,7 @@
 
 - (id) addGlobalMonitor:(NSEventMask) mask handler:(void (^)(NSEvent *)) handler;
 - (void) removeGlobalMonitor:(id) monitor;
-- (bool) requestPermissions;
+- (bool) enableAccessibility;
 - (pid_t) activeProcessId;
 - (pid_t) ownProcessId;
 - (bool) activateProcess:(pid_t) pid;
