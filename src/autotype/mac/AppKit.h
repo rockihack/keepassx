@@ -32,6 +32,7 @@ public:
     pid_t activeProcessId();
     pid_t ownProcessId();
     bool activateProcess(pid_t pid);
+    bool requestPermissions();
 
 private:
     void *self;

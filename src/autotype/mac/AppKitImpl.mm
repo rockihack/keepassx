@@ -76,6 +76,25 @@ AppKit::~AppKit()
 }
 
 //
+// Request permissions for auto-type
+//
+- (bool) requestPermissions
+{
+    // Screen recording
+    CGImageRef screenshot = CGWindowListCreateImage(
+        CGRectMake(0, 0, 1, 1),
+        kCGWindowListOptionOnScreenOnly,
+        kCGNullWindowID,
+        kCGWindowImageDefault
+    );
+    CFRelease(screenshot);
+
+    // Accessibility
+    NSDictionary *opts = @{static_cast<id>(kAXTrustedCheckOptionPrompt): @YES};
+    return AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef>(opts));
+}
+
+//
 // ------------------------- C++ Trampolines -------------------------
 //
 
@@ -97,6 +116,11 @@ pid_t AppKit::ownProcessId()
 bool AppKit::activateProcess(pid_t pid)
 {
     return [static_cast<id>(self) activateProcess:pid];
+}
+
+bool AppKit::requestPermissions()
+{
+    return [static_cast<id>(self) requestPermissions];
 }
 
 @end

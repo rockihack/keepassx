@@ -40,7 +40,7 @@ AutoTypePlatformMac::AutoTypePlatformMac()
 //
 bool AutoTypePlatformMac::isAvailable()
 {
-    return true;
+    return m_appkit->requestPermissions();
 }
 
 //
