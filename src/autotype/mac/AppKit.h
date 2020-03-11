@@ -18,7 +18,7 @@
 #ifndef KEEPASSX_APPKIT_H
 #define KEEPASSX_APPKIT_H
 
-#include <CoreGraphics/CGEvent.h>
+#include <unistd.h>
 
 extern "C" {
 
@@ -28,9 +28,6 @@ public:
     AppKit();
     ~AppKit();
 
-    void *addGlobalMonitor(CGKeyCode keycode, CGEventFlags modifier, void *userData, void (*handler)(void *));
-    void removeGlobalMonitor(void *monitor);
-    bool enableAccessibility();
     pid_t lastActiveProcessId();
     pid_t activeProcessId();
     pid_t ownProcessId();

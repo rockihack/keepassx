@@ -7,7 +7,7 @@ set(autotype_mac_mm_SOURCES
 )
 
 add_library(keepassx-autotype-cocoa MODULE ${autotype_mac_SOURCES} ${autotype_mac_mm_SOURCES})
-set_target_properties(keepassx-autotype-cocoa PROPERTIES LINK_FLAGS "-framework Foundation -framework AppKit")
+set_target_properties(keepassx-autotype-cocoa PROPERTIES LINK_FLAGS "-framework Foundation -framework AppKit -framework Carbon")
 target_link_libraries(keepassx-autotype-cocoa ${PROGNAME} Qt5::Core Qt5::Widgets)
 add_custom_command(TARGET keepassx-autotype-cocoa
                    POST_BUILD
